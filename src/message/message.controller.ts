@@ -50,15 +50,18 @@ export class MessageController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
-    return this.messageService.remove(id);
+  async delete(
+    @Param('id') id: string,
+    @Body() body: { senderId: string },
+  ): Promise<{ id: string }> {
+    return this.messageService.delete(id, body.senderId);
   }
 
   @Post('voice')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './public/uploads',
+        destination: './public/uploads/audio',
         filename: (_, file, cb) => {
           const filename = `${uuidv4()}${extname(file.originalname)}`;
           cb(null, filename);
@@ -70,7 +73,7 @@ export class MessageController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: { chatId: string; senderId: string; senderName: string },
   ) {
-    const audioUrl = `/uploads/${file.filename}`;
+    const audioUrl = `/uploads/audio/${file.filename}`;
 
     const newMessage = await this.messageService.createMessage({
       chatId: body.chatId,
@@ -78,6 +81,66 @@ export class MessageController {
       senderName: body.senderName,
       text: '',
       audioUrl,
+    });
+
+    return newMessage;
+  }
+
+  @Post('video')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './public/uploads/video',
+        filename: (_, file, cb) => {
+          const filename = `${uuidv4()}${extname(file.originalname)}`;
+          cb(null, filename);
+        },
+      }),
+    }),
+  )
+  async createVideoMessage(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: { chatId: string; senderId: string; senderName: string },
+  ) {
+    const videoUrl = `/uploads/video/${file.filename}`;
+
+    const newMessage = await this.messageService.createMessage({
+      chatId: body.chatId,
+      senderId: body.senderId,
+      senderName: body.senderName,
+      text: '',
+      videoUrl,
+    });
+
+    return newMessage;
+  }
+
+  @Post('file')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './public/uploads/files',
+        filename: (_, file, cb) => {
+          const filename = `${uuidv4()}${extname(file.originalname)}`;
+          cb(null, filename);
+        },
+      }),
+    }),
+  )
+  async createFileMessage(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: { chatId: string; senderId: string; senderName: string },
+  ) {
+    const fileUrl = `/uploads/files/${file.filename}`;
+    const originalName = file.originalname;
+
+    const newMessage = await this.messageService.createMessage({
+      chatId: body.chatId,
+      senderId: body.senderId,
+      senderName: body.senderName,
+      text: '',
+      fileUrl,
+      fileName: originalName,
     });
 
     return newMessage;

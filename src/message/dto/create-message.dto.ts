@@ -18,4 +18,13 @@ export class CreateMessageDto {
 
   @IsString()
   audioUrl?: string;
+
+  @IsString()
+  videoUrl?: string;
+
+  @IsString()
+  fileUrl?: string;
+
+  @IsString()
+  fileName?: string;
 }

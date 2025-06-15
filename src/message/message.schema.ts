@@ -12,7 +12,6 @@ export class Message extends Document {
   @Prop()
   senderName: string;
 
-  // @Prop({ required: true })
   @Prop()
   text: string;
 
@@ -21,6 +20,15 @@ export class Message extends Document {
 
   @Prop()
   audioUrl?: string;
+
+  @Prop()
+  videoUrl?: string;
+
+  @Prop()
+  fileUrl?: string;
+
+  @Prop()
+  fileName?: string;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);
