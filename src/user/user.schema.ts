@@ -21,6 +21,8 @@ export class User {
   @Prop({ required: true })
   @IsEmail()
   email?: string;
+
+  id?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
